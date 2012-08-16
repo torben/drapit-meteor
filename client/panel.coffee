@@ -24,7 +24,7 @@ if Meteor.is_client
     if Session.get("panelType") == "content"
       contents.find(user_id: user_id, _id: Session.get("panel")).fetch()
     else
-      images.find_by_id(Session.get("panel"))
+      Image.find_by_id(Session.get("panel"))
 
   Template.panel.events =
     'click table': (e) ->

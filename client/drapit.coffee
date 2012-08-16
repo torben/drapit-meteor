@@ -41,6 +41,7 @@ if Meteor.is_client
     pages.all()
 
   Template.image.style = ->
+    image = @
     str = ""
     for c of @css
       key = c
@@ -48,10 +49,12 @@ if Meteor.is_client
         when "left", "top", "width", "height"
           "#{@css[c]}px"
         when "transform"
+          #TODO: auf Bild auslagern
           key = "-webkit-transform"
           "rotate(#{@css[c]}deg)"
         else ""
-      str += "#{key}: #{value};"
+
+      str += "#{key}: #{value};" if key != ""
     str
 
   Template.content.style = ->
@@ -70,10 +73,10 @@ if Meteor.is_client
     str
 
   Template.image.selected = ->
-    if Session.equals("selected_image", @._id) then "selected" else ""
+    if Session.equals("selected_element", @._id) then "selected" else ""
 
   Template.content.selected = ->
-    if Session.equals("selected_image", @._id) then "selected" else ""
+    if Session.equals("selected_element", @._id) then "selected" else ""
 
   Template.content.events =
     'blur textarea': (e) ->

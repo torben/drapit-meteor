@@ -1,72 +1,77 @@
 class DrapitInterface
-  @activeElm = null
+  elm: null
   constructor: ->
     ### OBSERVER ###
     jQuery =>
       $(document).keyup (e) =>
-        return if @activeElm == null
+        return if @activeElm() == null
 
         pixel = if e.shiftKey then 10 else 1
         #console.log e.keyCode
         if e.keyCode == 38 # ↑
-          @activeElm.css.top = parseInt(@activeElm.css.top) - pixel
+          @activeElm().css.top = parseInt(@activeElm().css.top) - pixel
         else if e.keyCode == 39 # →
           console.log @activeElm.css.left
-          @activeElm.css.left = parseInt(@activeElm.css.left) + pixel
+          @activeElm.css.left = parseInt(@activeElm().css.left) + pixel
         else if e.keyCode == 40 # ↓
-          @activeElm.css.top =  parseInt(@activeElm.css.top) + pixel
+          @activeElm.css.top =  parseInt(@activeElm().css.top) + pixel
         else if e.keyCode == 37 # ←
-          @activeElm.css.left = parseInt(@activeElm.css.left) - pixel
+          @activeElm.css.left = parseInt(@activeElm().css.left) - pixel
         else
           return
 
         @update()
 
+  activeElm: ->
+    return @elm if @elm != null
+    @elm = Image.find_by_id(Session.get("selected_element")) || Content.find_by_id(Session.get("selected_element"))
+    @elm
+
   setActiveImage: (elm, type) ->
-    return if Session.equals("selected_image", elm._id) || Session.get("user_id") == null || isNaN(Session.get("user_id"))
-    Session.set("selected_image", elm._id)
-    @activeElm = elm
+    return if Session.equals("selected_element", elm._id) || Session.get("user_id") == null || isNaN(Session.get("user_id"))
+    Session.set("selected_element", elm._id)
 
   unsetActiveImage: ->
-    @activeElm = null
-    Session.set("selected_image", null)
+    @elm = null
+    Session.set("selected_element", null)
     Session.set("panel", null)
 
   startDragg: (startPos) ->
-    return if @activeElm == null
+    return if @activeElm() == null
     @onDragg = true
 
     $("body").on "mouseup.dragg", =>
       @stopDragg()
 
     $("body").on("mousemove.dragg", ((e) =>
-      image = $("##{@activeElm._id}")
+      image = $("##{@activeElm()._id}")
+      console.log @activeElm()
       top = e.pageY-startPos.y - image.parent().offset().top
       $(image).css(left: "#{e.pageX-startPos.x}px", top: "#{top}px")
     ))
 
   storeText: (text) ->
-    return if @activeElm == null
-    @activeElm.text = text
+    return if @activeElm() == null
+    @activeElm().text = text
     @update()
 
   stopDragg: ->
     @onDragg = false
-    image = $("##{@activeElm._id}")
-    @activeElm.css.top = parseInt($(image).css("top"))
-    @activeElm.css.left = parseInt($(image).css("left"))
+    image = $("##{@activeElm()._id}")
+    @activeElm().css.top = parseInt($(image).css("top"))
+    @activeElm().css.left = parseInt($(image).css("left"))
     @update()
 
     $("body").unbind("mousemove.dragg").unbind("mouseup.dragg")
 
   startResize: (behavior, startSize) ->
-    return if @activeElm == null
+    return if @activeElm() == null
     @onResize = true
 
     $("body").on "mouseup.resize", =>
       @stopResize()
 
-    image = $("##{@activeElm._id}")
+    image = $("##{@activeElm()._id}")
     origX = parseInt($(image).css("left"))
     origY = parseInt($(image).css("top"))
     origHeight = parseInt($(image).css("height"))
@@ -130,18 +135,19 @@ class DrapitInterface
 
   stopResize: ->
     @onResize = false
-    image = $("##{@activeElm._id}")
-    @activeElm.css = {} unless @activeElm.css?
-    @activeElm.css.width = parseInt($(image).css("width")) || $(image).width() || 100
-    @activeElm.css.height = parseInt($(image).css("height")) || $(image).height() || 100
-    @activeElm.css.top = parseInt($(image).css("top")) || 10
-    @activeElm.css.left = parseInt($(image).css("left")) || 10
+    image = $("##{@activeElm()._id}")
+    @activeElm().css = {} unless @activeElm.css?
+    @activeElm().css.width = parseInt($(image).css("width")) || $(image).width() || 100
+    @activeElm().css.height = parseInt($(image).css("height")) || $(image).height() || 100
+    @activeElm().css.top = parseInt($(image).css("top")) || 10
+    @activeElm().css.left = parseInt($(image).css("left")) || 10
     @update()
 
     $("body").unbind("mousemove.resize").unbind("mouseup.resize")
 
   update: ->
-    @activeElm.save()
+    console.log @activeElm()
+    @activeElm().save()
     return
     ###
     console.log @activeElm
