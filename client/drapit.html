@@ -1,0 +1,91 @@
+<head>
+  <title>drapit</title>
+</head>
+
+<body>
+  {{> upload}}
+
+  {{> panel}}
+</body>
+
+<template name="upload">
+  <div class="pages">
+    {{#each pages}}
+      <div class="images" style="height: {{css.height}}px" id="{{_id}}">
+        {{#each images}}
+          {{> image}}
+        {{/each}}
+        {{#each contents}}
+          {{> content}}
+        {{/each}}
+      </div>
+      <div class="seperator"></div>
+    {{/each}}
+  </div>
+</template>
+
+<template name="panel">
+  {{#each images}}
+    {{> panel_info}}
+  {{/each}}
+</template>
+
+<template name="panel_info">
+  <div class="panel" data-image-id="{{_id}}">
+    <table>
+    <tr>
+      <td colspan="2">
+        {{#if hasBackground}}
+          <div id="color-selector">aaa</div>
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>width x height:</td>
+      <td>
+        <input type="text" name="width" value="{{css.width}}">
+        x
+        <input type="text" name="height" value="{{css.height}}">
+      </td>
+    </tr>
+    <tr>
+      <td>top x left:</td>
+      <td>
+        <input type="text" name="top" value="{{css.top}}">
+        x
+        <input type="text" name="left" value="{{css.left}}">
+      </td>
+    </tr>
+    <tr>
+      <td>Rotate</td>
+      <td>
+        <input type="text" name="transform" value="{{css.transform}}">
+      </td>
+    </tr>
+    </table>
+  </div>
+</template>
+
+<template name="image">
+  <div class="image {{selected}}" style="{{style}}" id="{{_id}}">
+    <div class="resize left-top">XXX</div>
+    <div class="resize right-top">XXX</div>
+    <div class="resize right-bottom">XXX</div>
+    <div class="resize left-bottom">XXX</div>
+
+    <img src="{{src}}" class="controllable" />
+  </div>
+</template>
+
+<template name="content">
+  <div class="content {{selected}}" style="{{style}}" id="{{_id}}">
+    
+    <div class="resize left-top">XXX</div>
+    <div class="resize right-top">XXX</div>
+    <div class="resize right-bottom">XXX</div>
+    <div class="resize left-bottom">XXX</div>
+
+    <textarea class="hide">{{text}}</textarea>
+    <pre class="controllable content-area">{{text}}</pre>
+  </div>
+</template>

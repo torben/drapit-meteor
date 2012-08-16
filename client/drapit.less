@@ -1,0 +1,68 @@
+html {
+  width:100%;
+  height:100%;
+}
+
+body {
+  min-width: 100%;
+  min-height: 100%;
+  padding-bottom: 50px;
+  background:green;
+
+  .panel {
+    position:fixed;
+    right:30px;
+    top:30px;
+  }
+
+  .pages {
+    width:100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    .seperator {
+      background: #c0c0c0;
+      height:5px;
+      width:100%;
+    }
+
+    .images {
+      width:100%;
+      position: relative;
+      overflow: hidden;
+
+      .image, .content {
+        position:absolute;
+        .resize {
+          position:absolute;
+          display:none;
+
+          &.left-top { left:0px; }
+          &.right-top { right:0px; }
+          &.left-bottom { bottom: 0; left:0; }
+          &.right-bottom { bottom: 0; right:0; }
+        }
+
+        &.selected {
+          border: 1px red solid;
+          margin:-1px 0px 0px -1px;
+
+          .resize {
+            display:block;
+          }
+        }
+
+        img, textarea, .content-area {
+          width:100%;
+          height:100%;
+          padding:0px;
+          margin:0px;
+          border:none;
+          background:none;
+          overflow:hidden;
+        }
+      }
+    }
+  }
+}
