@@ -22,9 +22,9 @@ if Meteor.is_client
       		$("##{Session.get("panel")}").css('backgroundColor', '#' + hex)
 
     if Session.get("panelType") == "content"
-      contents.find(user_id: user_id, _id: Session.get("panel")).fetch()
+      [Content.find_by_id(Session.get("panel"))]
     else
-      Image.find_by_id(Session.get("panel"))
+      [Image.find_by_id(Session.get("panel"))]
 
   Template.panel.events =
     'click table': (e) ->

@@ -11,7 +11,6 @@ class DrapitInterface
         if e.keyCode == 38 # ↑
           @activeElm().css.top = parseInt(@activeElm().css.top) - pixel
         else if e.keyCode == 39 # →
-          console.log @activeElm.css.left
           @activeElm.css.left = parseInt(@activeElm().css.left) + pixel
         else if e.keyCode == 40 # ↓
           @activeElm.css.top =  parseInt(@activeElm().css.top) + pixel
@@ -24,7 +23,7 @@ class DrapitInterface
 
   activeElm: ->
     return @elm if @elm != null
-    @elm = Image.find_by_id(Session.get("selected_element")) || Content.find_by_id(Session.get("selected_element"))
+    @elm = Image.find_by_id(Session.get("selected_element")) || Content.find_by_id(Session.get("selected_element")) || Page.find_by_id(Session.get("selected_element"))
     @elm
 
   setActiveImage: (elm, type) ->
@@ -45,7 +44,6 @@ class DrapitInterface
 
     $("body").on("mousemove.dragg", ((e) =>
       image = $("##{@activeElm()._id}")
-      console.log @activeElm()
       top = e.pageY-startPos.y - image.parent().offset().top
       $(image).css(left: "#{e.pageX-startPos.x}px", top: "#{top}px")
     ))
@@ -146,7 +144,6 @@ class DrapitInterface
     $("body").unbind("mousemove.resize").unbind("mouseup.resize")
 
   update: ->
-    console.log @activeElm()
     @activeElm().save()
     return
     ###

@@ -8,7 +8,9 @@ class Model
 
     if @has_many? && @_id?
       for h in @has_many
+        #that = @
         eval("this.#{h} = #{h.singularize().capitalize()}.all({#{@className().toLowerCase()}_id: this._id})")
+        #eval("this.#{h}.build = function(options) { that.build(options) }")
 
   @className: ->
     i = new @
@@ -24,7 +26,9 @@ class Model
   @find_by_id: (id) ->
     try
       collection = eval(@.className().toLowerCase().pluralize())
-      new @(collection.find(_id: id).fetch()[0])
+      obj = collection.find(_id: id).fetch()[0]
+      return null if obj.length == 0
+      return new @(obj)
     catch e
       null
 
@@ -44,6 +48,15 @@ class Model
       obj[o] = eval("this.#{o}")
 
     if @isNew()
-      @collection.insert(obj)
+      try
+        delete obj._id
+        obj = eval("#{this.className()}.find_by_id(this.collection.insert(obj))")
+        @constructor(obj)
+        return @
+      catch e
+        return null
     else
       @collection.update(@_id, obj)
+      obj = eval("#{this.className()}.find_by_id(this._id)")
+      @constructor(obj)
+      return @
