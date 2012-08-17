@@ -12,6 +12,12 @@ class Model
         eval("this.#{h} = #{h.singularize().capitalize()}.all({#{@className().toLowerCase()}_id: this._id})")
         #eval("this.#{h}.build = function(options) { that.build(options) }")
 
+    if @belongs_to? && !@isNew()
+      for b in @belongs_to
+        foreign_key = eval("this.#{b}_id")
+        #console.log "this.#{b} = #{b.capitalize()}.find_by_id('#{foreign_key}')"
+        #eval("this.#{b} = #{b.capitalize()}.find_by_id('#{eval("this.#{b}_id")}')") # endless :(
+
   @className: ->
     i = new @
     funcNameRegex = /function (.{1,})\(/
