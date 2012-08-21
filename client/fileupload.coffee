@@ -1,8 +1,11 @@
 class FileUploadObserver
+  @fileCount = 0
+  @files = 0
+  @failedFiles = 0
+
   constructor: ->
     try
       dropbox = $("body")[0]
-      console.log dropbox
 
       # init event handlers
       dropbox.addEventListener("dragenter", ((e) => @dragEnter(e)), false)
@@ -10,7 +13,6 @@ class FileUploadObserver
       dropbox.addEventListener("dragover", ((e) => @dragOver(e)), false)
       dropbox.addEventListener("drop", ((e) => @drop(e)), false)
     catch e
-      console.log e
       # Browser like IE
 
 
@@ -27,7 +29,6 @@ class FileUploadObserver
     e.preventDefault()
 
   drop: (e) ->
-    console.log @
     e.stopPropagation()
     e.preventDefault()
 
@@ -53,6 +54,21 @@ class FileUploadObserver
 
     return mouse
 
+  reset: (length) ->
+    @fileCount = length
+    @files = 0
+    @failed = 0
+
+  uploaded: ->
+    @files++
+    if @files >= @fileCount
+      $.unblockUI()
+      alert('Mindestens ein Bild konnte nicht verarbeitet werden!') if @failed > 0
+
+  failed: ->
+    @failedFiles++
+    @uploaded()
+
   handleFiles: (files, e) ->
     mouse = @getMouse(e)
 
@@ -63,7 +79,8 @@ class FileUploadObserver
     blockUI() if files.length > 0
 
     form = new FormData()
-    console.log files
+    @reset(files.length)
+
     for file in files
       form.append('path', '/')
       form.append('upload[upload]', file)
@@ -75,61 +92,31 @@ class FileUploadObserver
 
       mouse.x += 10
       mouse.y += 10
-      console.log "arg?"
 
-      break # Multiple Upload not supported yet
+      $.ajax
+        url: 'http://barbra-streisand.dev/uploads.json'
+        data: form
+        cache: false
+        contentType: false
+        processData: false
+        type: 'POST'
+        success: (uploadJSON) =>
+          @uploaded()
+          page_id = Session.get("activePage") || Page.all()[0]._id
+          page = $("##{page_id}")
 
-    console.log form
+          top = e.pageY - page.offset().top
+          left = e.pageX
 
-    $.ajax
-      url: 'http://barbra-streisand.dev/uploads.json'
-      data: form
-      cache: false
-      contentType: false
-      processData: false
-      type: 'POST'
-      success: (uploadJSON) ->
-        $.unblockUI()
-        page_id = Session.get("activePage") || Page.all()[0]._id
-        page = $("##{page_id}")
-
-        top = e.pageY - page.offset().top
-        left = e.pageX
-
-        image = new Image
-          css:
-            width: uploadJSON.width
-            height: uploadJSON.height
-            top: top
-            left: left
-          image_urls: uploadJSON.image_urls
-          page_id: page_id
-        image.save()
-      error: ->
-        alert('Bild konnte nicht verarbeitet werden!')
-        $.unblockUI()
-
-    ###
-    xhr = new XMLHttpRequest()
-    xhr.open("POST", "http://barbra-streisand.dev")
-    xhr.onload = (response) ->
-      console.log response
-
-    xhr.send(form)
-    ###
-    
-    
-    ###
-    Meteor.call "uploadImage", file, =>
-      test = 
-        success: (uploadJSON) ->
-          $.unblockUI()
-          # das auskommentieren, wenn faye funzt
-          upload = new Pixbob.Models.Upload(uploadJSON)
-          router.uploads.add(upload)
-          window.router.setBackground()
-        error: ->
-          alert('Bild konnte nicht verarbeitet werden!')
-          $.unblockUI()
-    ###
+          image = new Image
+            css:
+              width: uploadJSON.width
+              height: uploadJSON.height
+              top: top
+              left: left
+            image_urls: uploadJSON.image_urls
+            page_id: page_id
+          image.save()
+        error: =>
+          @failed()
 
