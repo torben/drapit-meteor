@@ -12,11 +12,11 @@ if Meteor.is_client
       		return false
       	onHide: (colpkr) ->
       		$(colpkr).fadeOut(500)
-      		content = Contents.find(user_id: Session.get("user_id")).fetch()[0]
+      		content = Content.find_by_id(Session.get("panel"))
 
       		content.css["background-color"] = $("##{Session.get("panel")}").css('backgroundColor')
       		
-      		contents.update(content._id, content)
+      		content.save()
       		return false
       	onChange: (hsb, hex, rgb) ->
       		$("##{Session.get("panel")}").css('backgroundColor', '#' + hex)

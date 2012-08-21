@@ -28,6 +28,7 @@ class DrapitInterface
 
   setActiveImage: (elm, type) ->
     return if Session.equals("selected_element", elm._id) || Session.get("user_id") == null || isNaN(Session.get("user_id"))
+    @elm = null
     Session.set("selected_element", elm._id)
 
   unsetActiveImage: ->

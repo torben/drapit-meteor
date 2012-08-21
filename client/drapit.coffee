@@ -102,7 +102,7 @@ if Meteor.is_client
       return if drapitInterface.onDragg || drapitInterface.onResize
       drapitInterface.unsetActiveImage()
     'mousedown .resize': (e) ->
-      elm = $("##{drapitInterface.activeElm._id}")
+      elm = $("##{drapitInterface.activeElm()._id}")
       r = $(e.currentTarget)
       behavior = if r.hasClass("left-top")
         "lt"
