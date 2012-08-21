@@ -1,6 +1,6 @@
-pages = new Pages() #Meteor.Collection("pages")
-images = new Images() #new Meteor.Collection("images")
-contents = new Contents() # Meteor.Collection("contents")
+pages = new Pages()
+images = new Images()
+contents = new Contents()
 
 blockUI = ->
   $.blockUI
@@ -19,8 +19,7 @@ setNickname = ->
   if document.location.subdomain() != ""
     Session.set("nickname", document.location.subdomain())
     Meteor.call "nickname", document.location.subdomain(), (e, s) ->
-      unless s
-        Session.set("nickname", "")
+      Session.set("nickname", "") unless s
         
 
 checkLogin = ->
