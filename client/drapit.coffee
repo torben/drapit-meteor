@@ -2,6 +2,8 @@ pages = new Pages()
 images = new Images()
 contents = new Contents()
 
+user_id = 18
+
 blockUI = ->
   $.blockUI
     overlayCSS: { backgroundColor: '#fff', opacity: 0.95 }
@@ -20,7 +22,6 @@ setNickname = ->
     Session.set("nickname", document.location.subdomain())
     Meteor.call "nickname", document.location.subdomain(), (e, s) ->
       Session.set("nickname", "") unless s
-        
 
 checkLogin = ->
   ###
@@ -31,9 +32,9 @@ checkLogin = ->
       else
         Session.set("user_id", null)
   ###
-  Meteor.call "me", 18, "2f3c6a919580a8d1862d6006874f1a32", (e, s) ->
+  Meteor.call "me", user_id, "2f3c6a919580a8d1862d6006874f1a32", (e, s) ->
     if s
-      Session.set("user_id", 18)
+      Session.set("user_id", user_id)
     else
       Session.set("user_id", null)
 
@@ -43,8 +44,8 @@ if Meteor.is_client
   checkLogin()
 
   Meteor.autosubscribe ->
-    Meteor.subscribe("images", 18)
-    Meteor.subscribe("contents", 18)
+    Meteor.subscribe("images", user_id)
+    Meteor.subscribe("contents", user_id)
     Meteor.subscribe("pages", Session.get("nickname"))
 
   jQuery ->
