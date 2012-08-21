@@ -35,6 +35,8 @@ if Meteor.is_client
       target = e.currentTarget
       @css[target.name] = target.value
       images.update(@._id, @)
+    'keyup input': (e) ->
+      e.stopPropagation()
 
   Template.panel_info.hasBackground = ->
     Session.get("panelType") == "content"
