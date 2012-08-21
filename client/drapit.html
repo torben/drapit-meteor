@@ -1,12 +1,21 @@
 <head>
   <title>drapit</title>
+  <link rel="stylesheet" href="/css/jquery-ui-1.8.23.custom.css"></link>
 </head>
 
 <body>
+  {{> menubar}}
+
   {{> upload}}
 
   {{> panel}}
 </body>
+
+<template name="menubar">
+  <div class="menubar">
+    <div class="btn add-page">Add Page</div>
+  </div>
+</template>
 
 <template name="upload">
   <div class="pages">
