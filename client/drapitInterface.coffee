@@ -8,18 +8,24 @@ class DrapitInterface
 
         pixel = if e.shiftKey then 10 else 1
         #console.log e.keyCode
+        found = true
         if e.keyCode == 38 # ↑
           @activeElm().css.top = parseInt(@activeElm().css.top) - pixel
         else if e.keyCode == 39 # →
-          @activeElm.css.left = parseInt(@activeElm().css.left) + pixel
+          @activeElm().css.left = parseInt(@activeElm().css.left) + pixel
         else if e.keyCode == 40 # ↓
-          @activeElm.css.top =  parseInt(@activeElm().css.top) + pixel
+          @activeElm().css.top =  parseInt(@activeElm().css.top) + pixel
         else if e.keyCode == 37 # ←
-          @activeElm.css.left = parseInt(@activeElm().css.left) - pixel
+          @activeElm().css.left = parseInt(@activeElm().css.left) - pixel
         else if e.keyCode == 8 # DELETE
           @activeElm().destroy()
         else
+          found = false
           return
+
+        if found # TODO: need to break scrolling down
+          e.stopPropagation()
+          e.preventDefault()
 
         @update()
 
