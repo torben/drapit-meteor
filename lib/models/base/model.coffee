@@ -9,7 +9,7 @@ class Model
     if @has_many? && @_id?
       for h in @has_many
         #that = @
-        eval("this.#{h} = #{h.singularize().capitalize()}.all({#{@className().toLowerCase()}_id: this._id})")
+        eval("this.#{h} = #{h.singularize().capitalize()}.all({#{@className().toLowerCase()}_id: this._id}, {sort: {created_at: -1}})")
         #eval("this.#{h}.build = function(options) { that.build(options) }")
 
     if @belongs_to? && !@isNew()
@@ -41,7 +41,7 @@ class Model
   @all: (options = {}) ->
     collection = eval(@.className().toLowerCase().pluralize())
     arr = []
-    for obj in collection.find(options).fetch()
+    for obj in collection.find(options, {sort: {created_at: -1}}).fetch()
       arr.push(new @(obj))
     arr
 
@@ -66,3 +66,6 @@ class Model
       obj = eval("#{this.className()}.find_by_id(this._id)")
       @constructor(obj)
       return @
+
+  destroy: ->
+    @collection.remove(@_id)

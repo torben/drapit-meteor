@@ -1,18 +1,36 @@
-user_id = 18
-canEdit = true
+pages = new Pages() #Meteor.Collection("pages")
+images = new Images() #new Meteor.Collection("images")
+contents = new Contents() # Meteor.Collection("contents")
 
-pages = new Pages(user_id) #Meteor.Collection("pages")
-images = new Images(user_id) #new Meteor.Collection("images")
-contents = new Contents(user_id) # Meteor.Collection("contents")
+blockUI = ->
+  $.blockUI
+    overlayCSS: { backgroundColor: '#fff', opacity: 0.95 }
+    message: '<img src="/assets/ajax-loader-green.gif" />'
+    baseZ: 99997
+    css: {
+      border: ''
+      background: ''
+    }
 
 inTools = ->
   $(".colorpicker").is(":visible") || (Session.get("editmode")? && Session.get("editmode") != null)
+
+setNickname = ->
+  if document.location.subdomain() != ""
+    Session.set("nickname", document.location.subdomain())
+    Meteor.call "nickname", document.location.subdomain(), (e, s) ->
+      unless s
+        Session.set("nickname", "")
+        
 
 checkLogin = ->
   ###
   $.getJSON "http://barbra-streisand.dev/me?sensible=true&callback=?", (data) ->
     Meteor.call "me", data.id, data.api_key, (e, s) ->
-      Session.set("user_id", data.id)
+      if s
+        Session.set("user_id", 18)
+      else
+        Session.set("user_id", null)
   ###
   Meteor.call "me", 18, "2f3c6a919580a8d1862d6006874f1a32", (e, s) ->
     if s
@@ -20,25 +38,32 @@ checkLogin = ->
     else
       Session.set("user_id", null)
 
+
 if Meteor.is_client
+  setNickname()
   checkLogin()
 
   Meteor.autosubscribe ->
-    Meteor.subscribe("images", user_id)
-    Meteor.subscribe("contents", user_id)
-    Meteor.subscribe("pages", user_id)
+    Meteor.subscribe("images", 18)
+    Meteor.subscribe("contents", 18)
+    Meteor.subscribe("pages", Session.get("nickname"))
 
   jQuery ->
     $("body").click ->
       window.drapitInterface.unsetActiveImage() unless inTools()
 
   Meteor.startup ->
+    Session.set("activePage", "")
     window.drapitInterface = new DrapitInterface()
+    window.uploadObserver = new FileUploadObserver()
 
   Template.upload.pages = ->
-    return if isNaN(user_id)
+    return if isNaN(Session.get("user_id"))
 
-    pages.all()
+    Page.all()
+
+  Template.upload.loading = ->
+    Session.get("nickname") != "" && Page.all().length == 0
 
   Template.image.style = ->
     image = @
@@ -89,6 +114,8 @@ if Meteor.is_client
       , 100
 
   Template.upload.events =
+    'mouseover .images': (e) ->
+      Session.set("activePage", $(e.currentTarget).attr("id"))
     'mouseover .image': (e) ->
       #return if drapitInterface.onDragg || drapitInterface.onResize
       #drapitInterface.setActiveImage(@)
@@ -117,7 +144,7 @@ if Meteor.is_client
       return false
 
     'mousedown .seperator': (e) ->
-      elm = $("##{drapitInterface.activeElm._id}")
+      elm = $("##{drapitInterface.activeElm()._id}")
 
       drapitInterface.startResize("tb", x: e.pageX, y: e.pageY, width: elm.width(), height: elm.height())
       return false
@@ -168,3 +195,12 @@ if Meteor.is_client
       else
         Session.set("panelType", 'image')
         return false
+
+  Template.menubar.events =
+    'click .add-page': (e) ->
+      page = new Page
+        css:
+          height: 500
+      page.save()
+
+

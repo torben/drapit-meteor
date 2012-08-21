@@ -18,19 +18,65 @@
 </template>
 
 <template name="upload">
-  <div class="pages">
-    {{#each pages}}
-      <div class="images" style="height: {{css.height}}px" id="{{_id}}">
-        {{#each images}}
-          {{> image}}
-        {{/each}}
-        {{#each contents}}
-          {{> content}}
+  {{#if loading}}
+    loading!
+  {{else}}
+    {{#if pages}}
+      <div class="pages">
+        {{#each pages}}
+          <div class="images" style="height: {{css.height}}px" id="{{_id}}">
+            {{#each images}}
+              {{> image}}
+            {{/each}}
+            {{#each contents}}
+              {{> content}}
+            {{/each}}
+          </div>
+          <div class="seperator"></div>
         {{/each}}
       </div>
-      <div class="seperator"></div>
-    {{/each}}
-  </div>
+    {{else}}
+      {{> newpage}}
+    {{/if}}
+  {{/if}}
+</template>
+
+<template name="newpage">
+<div class="wrapper-home">
+  <div class="wrapper-home-inner" id="home-container">
+      <div class="content-wrapper">
+        <div class="content-wrapper-inner" id="keyvisual-wrapper">
+        <a href="http://www.drapit.com" id="logo"><img src="img/logo.png" alt="Logo von Dropit" /></a>    
+        <div class="centerize"><h1>Drag and Drop with <span class="orange">DRAP</span>IT<span class="orange">!</span></h1></div>
+        <div class="table">
+          <div class="table_cell one"><img src="img/lp_fotos.png" alt="Foto Icons" data-nopix="true"/><h2>Drag & Drop images</h2><p>Simply drag images onto a blank page and start to design your tab. You won‘t need a single line of code.</p></div>
+          <div class="table_cell seperator"><!-- Sepeartor --></div>
+          <div class="table_cell two"><img src="img/lp_text.png" alt="Text Icon" data-nopix="true" /><h2>Add & edit text</h2><p>Add text to your tab. It‘s as easy as writing an email. What you see is what you get and that can be amazing!</p></div>
+          <div class="table_cell seperator"><!-- Sepeartor --></div>
+          <div class="table_cell three"><img src="img/lp_social.png"  alt="social Icons" data-nopix="true"/><h2>Share it for free</h2><p>Publish your tab to fans with just one click. It‘s free, no registration required and you won‘t see a single banner add. </p></div>
+        </div>
+        <div class="centerize fb_button"><a href="http://www.facebook.com/pages/Drap-It/245927138847814" class="link_to_fb"><span>Go to Facebook!</span></a></div>
+      </div>
+      </div>
+    </div>
+    </div>
+    <div id="bottom">
+
+      <div class="nav_wrapper"><div class="nav_wrapper_inner"><a href="#" id="navbar_up"><span>&nbsp;</span></a></div></div>
+      <footer style="display:none;" class="centerize" id="navbar">
+        <ul>
+          <li>
+            <a href="index.html" class="brand active home"><span>About<br />Drap it</span></a>
+          </li>
+          <li>
+            <a href="http://support.pixoona.com/anonymous_requests/new" class="support" target="_blank"><span >Support</span></a>
+          </li>
+          <li>
+            <a href="impressum.html" class="imprint"><span >Imprint</span></a>
+          </li>
+        </ul>
+      </footer>
+    </div>
 </template>
 
 <template name="panel">
@@ -82,7 +128,7 @@
     <div class="resize right-bottom">XXX</div>
     <div class="resize left-bottom">XXX</div>
 
-    <img src="{{src}}" class="controllable" />
+    <img src="{{host}}{{src}}" class="controllable" />
   </div>
 </template>
 

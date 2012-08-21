@@ -16,6 +16,8 @@ class DrapitInterface
           @activeElm.css.top =  parseInt(@activeElm().css.top) + pixel
         else if e.keyCode == 37 # ←
           @activeElm.css.left = parseInt(@activeElm().css.left) - pixel
+        else if e.keyCode == 8 # DELETE
+          @activeElm().destroy()
         else
           return
 
