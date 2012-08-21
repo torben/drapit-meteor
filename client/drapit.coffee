@@ -28,7 +28,7 @@ checkLogin = ->
   $.getJSON "http://barbra-streisand.dev/me?sensible=true&callback=?", (data) ->
     Meteor.call "me", data.id, data.api_key, (e, s) ->
       if s
-        Session.set("user_id", 18)
+        Session.set("user_id", user_id)
       else
         Session.set("user_id", null)
   ###
