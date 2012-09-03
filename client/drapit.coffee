@@ -60,7 +60,7 @@ if Meteor.is_client
   Template.upload.pages = ->
     return if isNaN(Session.get("user_id"))
 
-    Page.all()
+    Page.all(nickname: Session.get("nickname"))
 
   Template.upload.loading = ->
     Session.get("nickname") != "" && Page.all().length == 0

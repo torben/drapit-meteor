@@ -33,7 +33,6 @@ if Meteor.is_server
       origUpdate = Meteor.default_server.method_handlers["/#{collection}/update"]
       Meteor.default_server.method_handlers["/#{collection}/update"] = (selector, modifier, options, callback) ->
         return if user_id == null || typeof selector != "string"
-        console.log "update: #{collection} #{selector}"
 
         modifier.user_id = user_id
         modifier.nickname = subdomain if collection == "pages"
@@ -48,12 +47,16 @@ if Meteor.is_server
     )
 
   Meteor.publish "images", (uid) ->
+    #console.log "uid: #{uid}"
     images.find(user_id: uid)
 
   Meteor.publish "pages", (nickname) ->
+    #console.log "called"
+    #console.log "nickname: #{nickname}"
     pages.find(nickname: nickname)
 
   Meteor.publish "contents", (uid) ->
+    #console.log "uid: #{uid}"
     contents.find(user_id: uid)
 
   Meteor.methods
