@@ -51,7 +51,7 @@ class Model
   save: ->
     obj = {}
     for o in @attr_accessible
-      obj[o] = eval("this.#{o}")
+      obj[o] = eval("this.#{o}") if o != "_id"
 
     if @isNew()
       try
@@ -62,7 +62,7 @@ class Model
       catch e
         return null
     else
-      @collection.update(@_id, obj)
+      @collection.update(@_id, {$set: obj})
       obj = eval("#{this.className()}.find_by_id(this._id)")
       @constructor(obj)
       return @

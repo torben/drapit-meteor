@@ -5,12 +5,16 @@ pages = new Pages #Meteor.Collection("pages")
 images = new Images #new Meteor.Collection("images")
 contents = new Contents # Meteor.Collection("contents")
 
+collections = [
+  pages, images, contents
+]
+
 user_id = null
 subdomain = null
 
 if Meteor.is_server
   Meteor.startup ->
-    _.each(['images', 'pages', 'contents'], (collection) ->
+    _.each(collections, (collection) ->
       ###
       _.each(['insert', 'update', 'remove'], (method) ->
         if user_id == null
@@ -19,31 +23,34 @@ if Meteor.is_server
       )
       ###
       
-      # INSERT
-      origInsert = Meteor.default_server.method_handlers["/#{collection}/insert"]
-      Meteor.default_server.method_handlers["/#{collection}/insert"] = (doc, callback) ->
-        return if user_id == null
+      collection.allow
+        insert: (userId, doc) ->
+          return if user_id == null
+          doc.user_id = user_id
+          doc.nickname = subdomain if collection == "pages"
+          doc.created_at = new Date().getTime()
 
-        doc.user_id = user_id
-        doc.nickname = subdomain if collection == "pages"
-        doc.created_at = new Date().getTime()
-        origInsert.call(@, doc, callback)
+          true
 
-      # UPDATE
-      origUpdate = Meteor.default_server.method_handlers["/#{collection}/update"]
-      Meteor.default_server.method_handlers["/#{collection}/update"] = (selector, modifier, options, callback) ->
-        return if user_id == null || typeof selector != "string"
+        update: (userId, docs, fields, modifier) ->
+          return if user_id == null #|| typeof selector != "string" #TODO: sicher machen
 
-        modifier.user_id = user_id
-        modifier.nickname = subdomain if collection == "pages"
-        origUpdate.call(@, selector, modifier, options, callback)
+          #modifier.user_id = user_id
+          #modifier.nickname = subdomain if collection == "pages"
 
-      # REMOVE
-      origRemove = Meteor.default_server.method_handlers["/#{collection}/remove"]
-      Meteor.default_server.method_handlers["/#{collection}/remove"] = (selector, callback) ->
-        return if user_id == null || typeof selector != "string"
 
-        origRemove.call(@, selector, callback)
+          return true
+          _.all docs, (doc) ->
+            return doc.user_id == user_id #  TODO: should be userId
+
+
+        remove: (userId, docs) ->
+          return if user_id == null || typeof selector != "string"
+
+          true
+
+        fetch: ['owner']
+
     )
 
   Meteor.publish "images", (uid) ->
