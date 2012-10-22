@@ -8,3 +8,5 @@ coffeescript
 underscore
 less
 http
+accounts-password
+accounts-base
